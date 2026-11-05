@@ -14,7 +14,7 @@ const CONFIG = {
   //     The key is made to be public, it only lets people send messages to you.
   //  2. FormSubmit (formsubmit.co): no key; the first message sends you an "Activate Form" email to click once.
   //  3. If both are down, the visitor gets a button that opens their own email app with the message already written.
-  web3formsKey: '',
+  web3formsKey: '81deca00-1627-4bc2-bec5-b6136b524896',
   ringText: 'AYMEN FERGANI · FULL STACK WEB DEVELOPER · ALGERIA · SINCE 2023 · ',
   heroPortrait: 'assets/img/aymen-arms-crossed.webp',
 };

@@ -8,7 +8,10 @@ import { createI18n, LANGS } from './i18n.js';
 
 /* ---------- Edit your details here ---------- */
 const CONFIG = {
-  email: 'aymandesanta@gmail.com',       // ← your contact email
+  email: 'aymandesanta@gmail.com',       // ← your contact email (the form delivers here)
+  // Messages from the contact form are delivered by FormSubmit (formsubmit.co), free and with no account.
+  // The very first message triggers an "Activate Form" email to the address above: click it once.
+  formService: 'https://formsubmit.co/ajax/',
   ringText: 'AYMEN FERGANI · FULL STACK WEB DEVELOPER · ALGERIA · SINCE 2023 · ',
   heroPortrait: 'assets/img/aymen-arms-crossed.webp',
 };
@@ -586,8 +589,11 @@ $('#copy-email').addEventListener('click', (e) => {
 
 const form = $('#transmit');
 const statusEl = $('#transmit-status');
-form.addEventListener('submit', (e) => {
+const sendBtn = $('#send-btn');
+let sending = false;
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (sending) return;
   const name = form.elements.name;
   const email = form.elements.email;
   const msg = form.elements.message;
@@ -604,11 +610,57 @@ form.addEventListener('submit', (e) => {
     bad.focus();
     return;
   }
-  statusEl.classList.remove('is-error');
-  const subject = t('mail.subject', { name: name.value.trim() });
-  const body = `${msg.value.trim()}\n\n${name.value.trim()}\n${email.value.trim()}`;
-  window.location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  statusEl.textContent = t('status.opening');
+  statusEl.classList.remove('is-error', 'is-sent');
+  statusEl.textContent = '';
+
+  // send it to the inbox
+  const label = $('[data-i18n="form.send"]', sendBtn);
+  sending = true;
+  form.classList.add('is-sending');
+  sendBtn.disabled = true;
+  sendBtn.setAttribute('aria-busy', 'true');
+  label.textContent = t('form.sending');
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 15000);
+  let outcome = 'failed';
+  try {
+    const res = await fetch(CONFIG.formService + CONFIG.email, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        name: name.value.trim(),
+        email: email.value.trim(),
+        message: msg.value.trim(),
+        language: i18n.lang.toUpperCase(),
+        _subject: `Portfolio · New message from ${name.value.trim()}`,
+        _template: 'table',
+        _captcha: 'false',
+        _honey: form.elements._honey.value,
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && String(data.success) === 'true') outcome = 'sent';
+    else if (/activat/i.test(String(data.message || ''))) outcome = 'activation';
+  } catch (err) {
+    outcome = 'failed';
+  }
+  clearTimeout(timer);
+  sending = false;
+  form.classList.remove('is-sending');
+  sendBtn.disabled = false;
+  sendBtn.removeAttribute('aria-busy');
+  label.textContent = t('form.send');
+
+  if (outcome === 'sent') {
+    statusEl.classList.add('is-sent');
+    statusEl.textContent = t('status.sent');
+    form.reset();
+    if (scene && !reduced) scene.warp(.5, 1);
+  } else {
+    statusEl.classList.add('is-error');
+    statusEl.textContent = t(outcome === 'activation' ? 'status.activation' : 'status.failed');
+  }
 });
 
 /* ==========================================================================
@@ -648,7 +700,8 @@ function setLang(lang, animate = true) {
   menuBtn.setAttribute('aria-label', t(menuOpen ? 'menu.close' : 'menu.open'));
   $$('[data-scramble]').forEach((el) => { el.dataset.final = el.textContent; });
   statusEl.textContent = '';
-  statusEl.classList.remove('is-error');
+  statusEl.classList.remove('is-error', 'is-sent');
+  if (!sending) $('[data-i18n="form.send"]', sendBtn).textContent = t('form.send');
   setShot(shotIndex);
   if (scene) scene.setTagSide(root.dir === 'rtl' ? -1 : 1);
   if (!changed) return;

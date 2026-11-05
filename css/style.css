@@ -941,3 +941,11 @@ html[lang="ar"] { --f-mono: "IBM Plex Sans Arabic", "Martian Mono", ui-monospace
 html[lang="ar"] :is(.passport__mrz, .clock__time, .clock__zone, .counter__num, .loader__pct, .browser__bar span, .lang__btn:not(.lang__btn--ar)) { font-family: "Martian Mono", ui-monospace, monospace; }
 html[lang="ar"] .browser__bar em { font-family: "IBM Plex Sans Arabic", var(--f-body); }
 html[lang="ar"] .passport__body { padding-top: calc(var(--pw) * .075); }
+
+/* Contact form: spam trap, sending and sent states */
+.transmit { position: relative; }
+.field--trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.transmit__status.is-sent { color: var(--flux); }
+.transmit.is-sending #send-btn { cursor: progress; opacity: .9; }
+.transmit.is-sending #send-btn .btn__icon { animation: send-pulse .9s ease-in-out infinite; }
+@keyframes send-pulse { 50% { opacity: .35; translate: 4px 0; } }

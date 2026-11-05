@@ -19,8 +19,10 @@ const EN_JS = {
   'selected': 'Selected',
   'status.email': 'Enter a valid email address so I can reply.',
   'status.missing': 'Add your name and a few words about the project.',
-  'status.opening': 'Your email app should open with the message ready. If it does not, copy the address below.',
-  'mail.subject': 'Project inquiry from {name}',
+  'form.sending': 'Sending…',
+  'status.sent': 'Message sent. Thank you, I’ll get back to you soon.',
+  'status.failed': 'Your message couldn’t be sent right now. Please try again, or email me at the address below.',
+  'status.activation': 'The contact form is being switched on. Please try again in a few minutes, or email me at the address below.',
   'cur.click': 'Δt · click',
 };
 
@@ -168,8 +170,10 @@ export const DICT = {
     'foot.back': 'Retour au présent ↑',
     'status.email': 'Entrez une adresse e-mail valide pour que je puisse vous répondre.',
     'status.missing': 'Ajoutez votre nom et quelques mots sur le projet.',
-    'status.opening': 'Votre application e-mail devrait s’ouvrir avec le message prêt. Sinon, copiez l’adresse ci-dessous.',
-    'mail.subject': 'Demande de projet de {name}',
+    'form.sending': 'Envoi…',
+    'status.sent': 'Message envoyé. Merci, je vous réponds très vite.',
+    'status.failed': 'Votre message n’a pas pu être envoyé. Réessayez, ou écrivez-moi à l’adresse ci-dessous.',
+    'status.activation': 'Le formulaire est en cours d’activation. Réessayez dans quelques minutes, ou écrivez-moi à l’adresse ci-dessous.',
 
     'cur.jump': 'Aller',
     'cur.visit': 'Visiter',
@@ -324,8 +328,10 @@ export const DICT = {
     'foot.back': 'العودة إلى الآن ↑',
     'status.email': 'أدخل بريدًا إلكترونيًا صالحًا لأتمكن من الرد عليك.',
     'status.missing': 'أضف اسمك وبضع كلمات عن المشروع.',
-    'status.opening': 'من المفترض أن يُفتح تطبيق البريد والرسالة جاهزة. إن لم يحدث ذلك، انسخ العنوان أدناه.',
-    'mail.subject': 'استفسار عن مشروع من {name}',
+    'form.sending': 'جارٍ الإرسال…',
+    'status.sent': 'تم إرسال رسالتك. شكرًا لك، سأرد عليك قريبًا.',
+    'status.failed': 'تعذّر إرسال رسالتك الآن. حاول مرة أخرى، أو راسلني على العنوان أدناه.',
+    'status.activation': 'يجري تفعيل نموذج التواصل. حاول مرة أخرى بعد بضع دقائق، أو راسلني على العنوان أدناه.',
 
     'cur.jump': 'انتقال',
     'cur.visit': 'زيارة',

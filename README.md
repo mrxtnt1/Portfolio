@@ -21,6 +21,16 @@ Then open http://localhost:8080. Opening `index.html` straight from disk will no
 
 Every push to `main` redeploys automatically.
 
+## Contact form
+
+Messages go straight to the inbox in `CONFIG.email` (`js/main.js`) through [FormSubmit](https://formsubmit.co), a free form-to-email service that needs no account and no server.
+
+1. After deploying, open the live site and send yourself a test message from the Contact section.
+2. FormSubmit emails that inbox an **Activate Form** link (check spam too). Click it once.
+3. From then on every message arrives as an email titled "Portfolio · New message from …", with the visitor's name, email (reply goes straight to them), message and language.
+
+A hidden spam-trap field filters out most bots. The form can't send from the Claude preview, only from the live site.
+
 ## Things to edit
 
 | What | Where |

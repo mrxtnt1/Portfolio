@@ -449,8 +449,13 @@
               <label for="f-msg" data-i18n="form.msg">Project details</label>
               <textarea id="f-msg" name="message" rows="3" required placeholder="What are we building?" data-i18n-attr="placeholder:ph.msg"></textarea>
             </div>
+            <!-- Spam trap: people never see or fill this field, bots do -->
+            <div class="field field--trap" aria-hidden="true">
+              <label for="f-website">Leave this empty</label>
+              <input id="f-website" name="_honey" type="text" tabindex="-1" autocomplete="off">
+            </div>
             <div class="transmit__foot">
-              <button class="btn btn--primary" type="submit" data-magnetic data-cursor="Send" data-i18n-attr="data-cursor:cur.send">
+              <button class="btn btn--primary" type="submit" id="send-btn" data-magnetic data-cursor="Send" data-i18n-attr="data-cursor:cur.send">
                 <span data-i18n="form.send">Send message</span>
                 <svg class="btn__icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
               </button>

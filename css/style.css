@@ -129,7 +129,7 @@ html.js .loader.is-done { opacity: 0; visibility: hidden; transition: opacity .8
 .loader__text { transition: opacity .3s; }
 html.js .loader.is-done .loader__dial { transform: scale(6); opacity: 0; } /* the loading ring opens into the wormhole */
 html.js .loader.is-done .loader__text { opacity: 0; }
-html.is-intro .era, html.is-intro .era *, html.is-intro .hero__tags { visibility: hidden !important; }
+html.is-intro .eras, html.is-intro .hero__tags { opacity: 0; }
 .loader__dial { position: relative; width: 132px; height: 132px; }
 .loader__ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .loader__track { fill: none; stroke: var(--line); stroke-width: 1; }
@@ -292,8 +292,8 @@ html.has-cursor input, html.has-cursor textarea { cursor: text; }
 html.js body { height: 100%; overflow: hidden; overscroll-behavior: none; }
 html.js { height: 100%; overflow: hidden; }
 html.js .eras { position: fixed; inset: 0; }
-html.js .era { position: absolute; inset: 0; visibility: hidden; pointer-events: none; }
-html.js .era.is-active, html.js .era.is-leaving { visibility: visible; }
+html.js .era { position: absolute; inset: 0; display: none; pointer-events: none; }
+html.js .era.is-active, html.js .era.is-leaving { display: block; }
 html.js .era.is-active { pointer-events: auto; }
 .era__scroll { position: relative; height: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; overscroll-behavior: contain; }
 .era__scroll::-webkit-scrollbar { display: none; }
@@ -468,9 +468,11 @@ html:not(.js) .scroll-cue { display: none; }
 .track::after {
   height: 2px; margin-top: -.5px; transform: scaleX(0); transform-origin: left;
   background: linear-gradient(90deg, var(--brass) 0%, var(--brass) 55%, #fff 70%, var(--flux) 85%, transparent);
-  transition: transform 1.8s var(--ease-out) .5s; box-shadow: 0 0 12px rgba(240, 179, 90, .5);
+  box-shadow: 0 0 12px rgba(240, 179, 90, .5);
 }
-.era.is-active .track::after { transform: scaleX(1); }
+.era.is-active .track::after { animation: track-x 1.8s var(--ease-out) .5s both; }
+@keyframes track-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes track-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 .node { position: relative; display: grid; gap: 8px; align-content: start; min-width: 0; }
 .node__year { font-family: var(--f-display); font-weight: 300; font-size: 1.6rem; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .node__dot { width: 13px; height: 13px; border-radius: 50%; margin: 6px 0 6px; position: relative; z-index: 1; background: var(--void); border: 1.5px solid var(--brass); }
@@ -764,7 +766,7 @@ html:not(.js) .colophon, html.fallback .colophon { position: static; padding-blo
   .track { grid-template-columns: 1fr; gap: 18px; padding-left: 28px; }
   .track::before, .track::after { left: 6px; right: auto; top: 6px; bottom: 6px; width: 1px; height: auto; }
   .track::after { width: 2px; margin: 0 0 0 -.5px; transform: scaleY(0); transform-origin: top; background: linear-gradient(180deg, var(--brass) 0%, var(--brass) 55%, #fff 70%, var(--flux) 85%, transparent); }
-  .era.is-active .track::after { transform: scaleY(1); }
+  .era.is-active .track::after { animation-name: track-y; }
   .node { grid-template-columns: auto 1fr; column-gap: 12px; }
   .node__dot { position: absolute; left: -28px; top: 4px; margin: 0; }
   .node__year { font-size: 1.15rem; grid-row: span 2; padding-top: 2px; min-width: 3.4ch; }
@@ -829,7 +831,7 @@ html.js.touch-flow { height: auto; overflow-x: hidden; overflow-y: auto; scrollb
 html.js.touch-flow::-webkit-scrollbar { display: none; }
 html.js.touch-flow body { height: auto; overflow: visible; overscroll-behavior: auto; }
 html.js.touch-flow .eras { position: relative; inset: auto; }
-html.js.touch-flow .era { position: relative; inset: auto; visibility: visible; pointer-events: auto; }
+html.js.touch-flow .era { position: relative; inset: auto; display: block; pointer-events: auto; }
 html.js.touch-flow .era__scroll { height: auto; overflow: visible; }
 html.js.touch-flow .era__inner { min-height: 100vh; min-height: 100svh; }
 html.js.touch-flow .hero__tags, html.js.touch-flow .scroll-cue { display: none; }

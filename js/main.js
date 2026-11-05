@@ -201,8 +201,8 @@ async function go(next, opts = {}) {
     await wait(200);
     setActive(from, false);
     from.getAnimations().forEach((a) => a.cancel());
-    scrollerOf(to).scrollTop = 0;
     setActive(to, true);
+    scrollerOf(to).scrollTop = 0;
     focusScene(next);
     if (next === 0 && scene) scene.materialize(.01);
     if (leavingHero && scene) scene.dematerialize(.01);
@@ -220,8 +220,8 @@ async function go(next, opts = {}) {
     from.classList.remove('is-leaving');
     cancelAnims(fromItems);
     if (leavingHero) cancelAnims(heroChars);
-    scrollerOf(to).scrollTop = 0;
     setActive(to, true);
+    scrollerOf(to).scrollTop = 0;
     focusScene(next);
     showItems(itemsOf(to), dir);
     if (next === 0) {

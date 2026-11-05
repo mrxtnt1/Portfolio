@@ -9,9 +9,12 @@ import { createI18n, LANGS } from './i18n.js';
 /* ---------- Edit your details here ---------- */
 const CONFIG = {
   email: 'aymandesanta@gmail.com',       // ← your contact email (the form delivers here)
-  // Messages from the contact form are delivered by FormSubmit (formsubmit.co), free and with no account.
-  // The very first message triggers an "Activate Form" email to the address above: click it once.
-  formService: 'https://formsubmit.co/ajax/',
+  // Contact form delivery, tried in order until one works:
+  //  1. Web3Forms: paste your free access key below (web3forms.com → enter your email → the key arrives by email).
+  //     The key is made to be public, it only lets people send messages to you.
+  //  2. FormSubmit (formsubmit.co): no key; the first message sends you an "Activate Form" email to click once.
+  //  3. If both are down, the visitor gets a button that opens their own email app with the message already written.
+  web3formsKey: '',
   ringText: 'AYMEN FERGANI · FULL STACK WEB DEVELOPER · ALGERIA · SINCE 2023 · ',
   heroPortrait: 'assets/img/aymen-arms-crossed.webp',
 };
@@ -589,6 +592,73 @@ $('#copy-email').addEventListener('click', (e) => {
 
 const form = $('#transmit');
 const statusEl = $('#transmit-status');
+const fallbackEl = $('#transmit-fallback');
+
+async function postJSON(url, payload, ms) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload),
+      signal: ctrl.signal,
+    });
+    return { ok: res.ok, data: await res.json().catch(() => ({})) };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+const MAIL_SERVICES = [
+  {
+    name: 'Web3Forms',
+    ready: () => !!CONFIG.web3formsKey,
+    async send(m) {
+      const r = await postJSON('https://api.web3forms.com/submit', {
+        access_key: CONFIG.web3formsKey,
+        subject: m.subject,
+        from_name: 'Aymen Fergani · Portfolio',
+        name: m.name,
+        email: m.email,
+        replyto: m.email,
+        message: m.message,
+        language: m.lang,
+      }, 15000);
+      return r.ok && r.data.success === true ? 'sent' : 'failed';
+    },
+  },
+  {
+    name: 'FormSubmit',
+    ready: () => true,
+    async send(m) {
+      const r = await postJSON(`https://formsubmit.co/ajax/${CONFIG.email}`, {
+        name: m.name,
+        email: m.email,
+        message: m.message,
+        language: m.lang,
+        _subject: m.subject,
+        _template: 'table',
+        _captcha: 'false',
+      }, 10000);
+      if (r.ok && String(r.data.success) === 'true') return 'sent';
+      return /activat/i.test(String(r.data.message || '')) ? 'activation' : 'failed';
+    },
+  },
+];
+async function deliver(m) {
+  let result = 'failed';
+  for (const service of MAIL_SERVICES) {
+    if (!service.ready()) continue;
+    try {
+      const r = await service.send(m);
+      if (r === 'sent') return 'sent';
+      if (r === 'activation') result = 'activation';
+    } catch (err) {
+      console.warn(`${service.name} did not answer.`, err);
+    }
+  }
+  return result;
+}
 const sendBtn = $('#send-btn');
 let sending = false;
 form.addEventListener('submit', async (e) => {
@@ -613,39 +683,26 @@ form.addEventListener('submit', async (e) => {
   statusEl.classList.remove('is-error', 'is-sent');
   statusEl.textContent = '';
 
-  // send it to the inbox
+  // honeypot filled in: a bot. Pretend it worked and send nothing.
+  if (form.elements._honey.value) { statusEl.classList.add('is-sent'); statusEl.textContent = t('status.sent'); form.reset(); return; }
+
+  const letter = {
+    name: name.value.trim(),
+    email: email.value.trim(),
+    message: msg.value.trim(),
+    lang: i18n.lang.toUpperCase(),
+    subject: `Portfolio · New message from ${name.value.trim()}`,
+  };
   const label = $('[data-i18n="form.send"]', sendBtn);
   sending = true;
   form.classList.add('is-sending');
   sendBtn.disabled = true;
   sendBtn.setAttribute('aria-busy', 'true');
   label.textContent = t('form.sending');
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 15000);
-  let outcome = 'failed';
-  try {
-    const res = await fetch(CONFIG.formService + CONFIG.email, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      signal: ctrl.signal,
-      body: JSON.stringify({
-        name: name.value.trim(),
-        email: email.value.trim(),
-        message: msg.value.trim(),
-        language: i18n.lang.toUpperCase(),
-        _subject: `Portfolio · New message from ${name.value.trim()}`,
-        _template: 'table',
-        _captcha: 'false',
-        _honey: form.elements._honey.value,
-      }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok && String(data.success) === 'true') outcome = 'sent';
-    else if (/activat/i.test(String(data.message || ''))) outcome = 'activation';
-  } catch (err) {
-    outcome = 'failed';
-  }
-  clearTimeout(timer);
+  fallbackEl.hidden = true;
+
+  const outcome = await deliver(letter);
+
   sending = false;
   form.classList.remove('is-sending');
   sendBtn.disabled = false;
@@ -658,8 +715,12 @@ form.addEventListener('submit', async (e) => {
     form.reset();
     if (scene && !reduced) scene.warp(.5, 1);
   } else {
+    // never lose a message: offer to send it from the visitor's own email app, already written
     statusEl.classList.add('is-error');
     statusEl.textContent = t(outcome === 'activation' ? 'status.activation' : 'status.failed');
+    const body = `${letter.message}\n\n${letter.name}\n${letter.email}`;
+    fallbackEl.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent(letter.subject)}&body=${encodeURIComponent(body)}`;
+    fallbackEl.hidden = false;
   }
 });
 
@@ -701,6 +762,7 @@ function setLang(lang, animate = true) {
   $$('[data-scramble]').forEach((el) => { el.dataset.final = el.textContent; });
   statusEl.textContent = '';
   statusEl.classList.remove('is-error', 'is-sent');
+  fallbackEl.hidden = true;
   if (!sending) $('[data-i18n="form.send"]', sendBtn).textContent = t('form.send');
   setShot(shotIndex);
   if (scene) scene.setTagSide(root.dir === 'rtl' ? -1 : 1);

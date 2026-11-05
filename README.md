@@ -23,13 +23,13 @@ Every push to `main` redeploys automatically.
 
 ## Contact form
 
-Messages go straight to the inbox in `CONFIG.email` (`js/main.js`) through [FormSubmit](https://formsubmit.co), a free form-to-email service that needs no account and no server.
+Messages go straight to the inbox in `CONFIG.email` (`js/main.js`). The form tries these in order until one works:
 
-1. After deploying, open the live site and send yourself a test message from the Contact section.
-2. FormSubmit emails that inbox an **Activate Form** link (check spam too). Click it once.
-3. From then on every message arrives as an email titled "Portfolio · New message from …", with the visitor's name, email (reply goes straight to them), message and language.
+1. **Web3Forms** (primary). Go to [web3forms.com](https://web3forms.com), enter your email and create an access key; it arrives by email. Paste it into `CONFIG.web3formsKey` in `js/main.js` and push. The key is meant to be public: it only lets people send messages to you. Free plan: 250 messages a month.
+2. **FormSubmit** (backup, no key). The first message it delivers sends an **Activate Form** email; click it once.
+3. If both are unreachable, the visitor gets a button that opens their own email app with the message already written, so nothing is lost.
 
-A hidden spam-trap field filters out most bots. The form can't send from the Claude preview, only from the live site.
+Each email is titled "Portfolio · New message from …" and includes the visitor's name, email (reply goes straight to them), message and language. A hidden spam-trap field quietly drops bot submissions. The form can't send from the Claude preview, only from the live site.
 
 ## Things to edit
 

@@ -21,7 +21,7 @@ const EN_JS = {
   'status.missing': 'Add your name and a few words about the project.',
   'form.sending': 'Sending…',
   'status.sent': 'Message sent. Thank you, I’ll get back to you soon.',
-  'status.failed': 'Your message couldn’t be sent right now. Please try again, or email me at the address below.',
+  'status.failed': 'The message service isn’t responding right now. Your message is ready to send from your email app instead.',
   'status.activation': 'The contact form is being switched on. Please try again in a few minutes, or email me at the address below.',
   'cur.click': 'Δt · click',
 };
@@ -172,7 +172,8 @@ export const DICT = {
     'status.missing': 'Ajoutez votre nom et quelques mots sur le projet.',
     'form.sending': 'Envoi…',
     'status.sent': 'Message envoyé. Merci, je vous réponds très vite.',
-    'status.failed': 'Votre message n’a pas pu être envoyé. Réessayez, ou écrivez-moi à l’adresse ci-dessous.',
+    'status.failed': 'Le service d’envoi ne répond pas pour le moment. Votre message est prêt à partir depuis votre messagerie.',
+    'form.fallback': 'L’envoyer depuis ma messagerie',
     'status.activation': 'Le formulaire est en cours d’activation. Réessayez dans quelques minutes, ou écrivez-moi à l’adresse ci-dessous.',
 
     'cur.jump': 'Aller',
@@ -330,7 +331,8 @@ export const DICT = {
     'status.missing': 'أضف اسمك وبضع كلمات عن المشروع.',
     'form.sending': 'جارٍ الإرسال…',
     'status.sent': 'تم إرسال رسالتك. شكرًا لك، سأرد عليك قريبًا.',
-    'status.failed': 'تعذّر إرسال رسالتك الآن. حاول مرة أخرى، أو راسلني على العنوان أدناه.',
+    'status.failed': 'خدمة الإرسال لا تستجيب حاليًا. رسالتك جاهزة للإرسال من تطبيق البريد لديك.',
+    'form.fallback': 'أرسلها من تطبيق البريد',
     'status.activation': 'يجري تفعيل نموذج التواصل. حاول مرة أخرى بعد بضع دقائق، أو راسلني على العنوان أدناه.',
 
     'cur.jump': 'انتقال',

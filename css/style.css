@@ -949,3 +949,13 @@ html[lang="ar"] .passport__body { padding-top: calc(var(--pw) * .075); }
 .transmit.is-sending #send-btn { cursor: progress; opacity: .9; }
 .transmit.is-sending #send-btn .btn__icon { animation: send-pulse .9s ease-in-out infinite; }
 @keyframes send-pulse { 50% { opacity: .35; translate: 4px 0; } }
+.transmit__foot { flex-wrap: wrap; }
+.transmit__fallback {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px;
+  border: 1px solid var(--flux); color: var(--flux); text-decoration: none;
+  font-family: var(--f-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase;
+  transition: background .3s, color .3s;
+}
+.transmit__fallback::after { content: "↗"; }
+.transmit__fallback:hover, .transmit__fallback:focus-visible { background: var(--flux); color: var(--void); }
+html[lang="ar"] .transmit__fallback { letter-spacing: 0; font-size: .82rem; text-transform: none; }

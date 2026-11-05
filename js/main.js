@@ -4,6 +4,8 @@
    swipes, the right-hand dial or the nav. No scrollbar anywhere.
    ========================================================================== */
 
+import { createI18n, LANGS } from './i18n.js';
+
 /* ---------- Edit your details here ---------- */
 const CONFIG = {
   email: 'aymandesanta@gmail.com',       // ← your contact email
@@ -16,6 +18,11 @@ window.__chronoReady = true;
 const root = document.documentElement;
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+// Languages: read the English text from the page first, then show the saved language
+const i18n = createI18n();
+const t = i18n.t;
+i18n.apply(root.lang);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const coarse = matchMedia('(pointer: coarse)').matches;
@@ -119,7 +126,7 @@ $$('[data-split]').forEach((el) => {
   }
   heroChars.push(...chars);
 });
-$('#now-title').setAttribute('aria-label', "Hello, I'm Aymen Fergani");
+$('#now-title').setAttribute('aria-label', t('hero.aria'));
 $('.hero__hello').setAttribute('aria-hidden', 'true');
 
 const itemsOf = (era) => $$('[data-r]', era);
@@ -373,7 +380,7 @@ function toggleMenu(open) {
   menuOpen = open;
   menu.hidden = !open;
   menuBtn.setAttribute('aria-expanded', String(open));
-  menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  menuBtn.setAttribute('aria-label', t(open ? 'menu.close' : 'menu.open'));
   if (open) {
     $$('a', menu).forEach((a, i) => a.animate([{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }], { duration: 600, delay: i * 50, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' }));
     const current = $(`a[data-goto="${ids[index]}"]`, menu);
@@ -413,7 +420,7 @@ function initCursor() {
     dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
     const sceneHover = !!(scene && index === 0 && !busy && scene.hovered);
-    const label = sceneHover ? 'Δt · click' : (hoverEl ? hoverEl.dataset.cursor : '');
+    const label = sceneHover ? t('cur.click') : (hoverEl ? hoverEl.dataset.cursor : '');
     if (label !== lastLabel) { cursorLabel.textContent = label; lastLabel = label; }
     cursorEl.classList.toggle('is-hover', !!label);
     requestAnimationFrame(loop);
@@ -563,17 +570,17 @@ const emailText = $('#direct-email');
 emailText.textContent = CONFIG.email;
 $('#copy-email').addEventListener('click', (e) => {
   const btn = e.currentTarget;
-  const done = (msg) => { btn.textContent = msg; setTimeout(() => { btn.textContent = 'Copy'; }, 1800); };
+  const done = (msg) => { btn.textContent = msg; setTimeout(() => { btn.textContent = t('copy'); }, 1800); };
   const selectText = () => {
     const range = document.createRange();
     range.selectNodeContents(emailText);
     const s = window.getSelection();
     s.removeAllRanges();
     s.addRange(range);
-    done('Selected');
+    done(t('selected'));
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(CONFIG.email).then(() => done('Copied'), selectText);
+    navigator.clipboard.writeText(CONFIG.email).then(() => done(t('copied')), selectText);
   } else selectText();
 });
 
@@ -593,15 +600,15 @@ form.addEventListener('submit', (e) => {
   });
   if (bad) {
     statusEl.classList.add('is-error');
-    statusEl.textContent = bad === email ? 'Enter a valid email address so I can reply.' : 'Add your name and a few words about the project.';
+    statusEl.textContent = t(bad === email ? 'status.email' : 'status.missing');
     bad.focus();
     return;
   }
   statusEl.classList.remove('is-error');
-  const subject = `Project inquiry from ${name.value.trim()}`;
+  const subject = t('mail.subject', { name: name.value.trim() });
   const body = `${msg.value.trim()}\n\n${name.value.trim()}\n${email.value.trim()}`;
   window.location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  statusEl.textContent = 'Your email app should open with the message ready. If it does not, copy the address below.';
+  statusEl.textContent = t('status.opening');
 });
 
 /* ==========================================================================
@@ -618,6 +625,45 @@ function updateTags() {
     el.style.opacity = show ? '1' : '0';
   });
 }
+
+/* ==========================================================================
+   Language switcher (EN · FR · AR) in the top bar
+   ========================================================================== */
+const langBtns = $$('.lang__btn');
+const glider = $('.lang__glider');
+function placeGlider() {
+  const on = langBtns.find((b) => b.dataset.lang === i18n.lang);
+  if (!on || !glider || !on.offsetWidth) return;
+  glider.style.setProperty('--gx', `${on.offsetLeft}px`);
+  glider.style.setProperty('--gw', `${on.offsetWidth}px`);
+}
+function setLang(lang, animate = true) {
+  if (!LANGS.includes(lang)) lang = 'en';
+  const changed = lang !== i18n.lang;
+  i18n.apply(lang);
+  try { localStorage.setItem('af-lang', lang); } catch (e) { /* private mode: the choice just isn't remembered */ }
+  langBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  placeGlider();
+  $('#now-title').setAttribute('aria-label', t('hero.aria'));
+  menuBtn.setAttribute('aria-label', t(menuOpen ? 'menu.close' : 'menu.open'));
+  $$('[data-scramble]').forEach((el) => { el.dataset.final = el.textContent; });
+  statusEl.textContent = '';
+  statusEl.classList.remove('is-error');
+  setShot(shotIndex);
+  if (scene) scene.setTagSide(root.dir === 'rtl' ? -1 : 1);
+  if (!changed) return;
+  updateHud();
+  requestAnimationFrame(() => { placeNeedle(); if (scene) scene.relayout(); });
+  if (animate && !reduced) {
+    if (scene) { scene.glitch(.8); scene.warp(.35, .8); }
+    sweep(1);
+    $('#eras').animate([{ opacity: .15 }, { opacity: 1 }], { duration: 520, easing: 'cubic-bezier(.16,1,.3,1)' });
+  }
+}
+langBtns.forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
+window.addEventListener('resize', placeGlider);
+if (document.fonts) document.fonts.ready.then(placeGlider);
+setLang(i18n.lang, false);
 
 /* ==========================================================================
    Touch flow: native scroll, the HUD and 3D rings follow the section in view
@@ -712,7 +758,7 @@ async function boot() {
   setProgress(1);
   await wait(reduced ? 50 : 450);
 
-  if (scene) scene.onFrame(updateTags);
+  if (scene) { scene.onFrame(updateTags); scene.setTagSide(root.dir === 'rtl' ? -1 : 1); }
   const playIntro = !!scene && !reduced;
   if (playIntro) root.classList.add('is-intro');
   loader.el.classList.add('is-done');

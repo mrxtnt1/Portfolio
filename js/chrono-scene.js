@@ -837,8 +837,11 @@ export async function createChronoScene({ canvas, portraitSrc, ringText, lite = 
     figure.visible = state.reveal > .001 || state.portal > .001;
   }
 
+  let tagSide = 1; // -1 mirrors the floating tags to the other side of the portrait (right-to-left layouts)
   function project(v) {
-    tmpV.copy(v).applyMatrix4(figure.matrixWorld).project(camera);
+    tmpV.copy(v);
+    tmpV.x *= tagSide;
+    tmpV.applyMatrix4(figure.matrixWorld).project(camera);
     return { x: (tmpV.x + 1) / 2 * window.innerWidth, y: (1 - tmpV.y) / 2 * window.innerHeight };
   }
 
@@ -867,6 +870,7 @@ export async function createChronoScene({ canvas, portraitSrc, ringText, lite = 
     relayout: computeTarget,
     setFocusPoint(x, y) { state.focusTarget.set(x, y); },
     setFollow(v) { follow = v; },
+    setTagSide(s) { tagSide = s < 0 ? -1 : 1; },
     materialize(dur = 2) {
       tween('portal', 1, dur * .5, ease.out);
       return tween('reveal', 1, dur, ease.inOut);

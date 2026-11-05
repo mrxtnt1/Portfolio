@@ -3,7 +3,7 @@
 Personal portfolio of **Aymen Fergani**, full stack web developer from Algeria.
 Live at **https://aymenfergani.vercel.app**
 
-A time-travel themed site: a persistent Three.js "time tunnel", a wormhole opening scene, a 3D hero portrait that materialises from a portal, and full-screen section jumps on desktop (mouse wheel, arrow keys, or the dial on the right). Phones and tablets scroll normally. No build step: plain HTML, CSS and JavaScript.
+A time-travel themed site: a persistent Three.js "time tunnel", a wormhole opening scene, a 3D hero portrait that materialises from a portal, and full-screen section jumps on desktop (mouse wheel, arrow keys, or the dial on the right). Phones and tablets scroll normally. English, French and Arabic (right-to-left), switchable from the top bar. No build step: plain HTML, CSS and JavaScript.
 
 ## Run it locally
 
@@ -26,6 +26,7 @@ Every push to `main` redeploys automatically.
 | What | Where |
 | --- | --- |
 | Contact email | `CONFIG.email` at the top of `js/main.js` |
+| French and Arabic text | `js/i18n.js` (English stays in `index.html`; each translated element carries a `data-i18n` key) |
 | Timeline milestones (2023 → Next) | `index.html`, section `id="timeline"` |
 | Technologies in the stack | `index.html`, section `id="stack"` |
 | The two projects in development | `index.html`, the `.slot` items in section `id="projects"` |
@@ -38,9 +39,10 @@ Every push to `main` redeploys automatically.
 
 - `index.html` · content and structure
 - `css/style.css` · theme tokens (brass = past, flux = future), layout and effects
-- `js/main.js` · section transitions, touch flow, HUD, cursor, form
+- `js/main.js` · section transitions, touch flow, HUD, cursor, form, language switcher
+- `js/i18n.js` · French and Arabic translations (Arabic switches the layout to right-to-left)
 - `js/chrono-scene.js` · the Three.js layer (wormhole intro, tunnel, chronograph rings, portrait shader, portal)
 - `assets/img/` · portraits (transparent WebP) and DF Shoes screenshots
 - `vercel.json` · clean URLs and caching for images
 
-Libraries: Three.js 0.160.0 from jsDelivr, fonts from Google Fonts (Unbounded, Instrument Serif, Manrope, Martian Mono). Without WebGL the hero falls back to a 2D portrait with the same layout.
+Libraries: Three.js 0.160.0 from jsDelivr, fonts from Google Fonts (Unbounded, Instrument Serif, Manrope, Martian Mono, plus Noto Kufi Arabic, IBM Plex Sans Arabic and Noto Naskh Arabic for Arabic). Without WebGL the hero falls back to a 2D portrait with the same layout.
